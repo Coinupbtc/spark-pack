@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>spark-pack — 121 GB per Spark</title>
+  <meta name="description" content="Pack models onto 1–3 DGX Sparks before you start them. FIT, TIGHT, or won't start — measured exclusion, not a spec sheet.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0c0e13">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c0e13'/%3E%3Crect x='4' y='22' width='24' height='6' fill='%23c8f54a'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/pack.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to packer</a>
+
+  <div class="wrap top">
+    <span id="as-of">spark-pack</span>
+    <nav aria-label="On this page">
+      <a href="#why">Why</a>
+      <a href="https://github.com/Coinupbtc/spark-pack">GitHub</a>
+    </nav>
+  </div>
+
+  <header class="wrap">
+    <p class="idx">DGX Spark · unified memory</p>
+    <h1>121 GB packer</h1>
+    <p class="use"><b>Use it:</b> Pick <b>1 / 2 / 3 Sparks</b>. Each column is one machine’s <b>121 GB</b> tank. Tap a model. If a combo hard-reboots a box, the verdict says <b>won't start</b>.</p>
+  </header>
+
+  <main class="wrap" id="main">
+    <div class="live cold" id="live">
+      <div>
+        <div class="tag" id="live-tag">Catalog</div>
+        <p id="live-text">Numbers are measured and dated. On a Spark, run ./probe.sh then refresh to overlay this machine.</p>
+      </div>
+      <button type="button" id="live-match" disabled>Match live</button>
+    </div>
+
+    <div class="panel">
+      <div class="topo" id="topo" role="group" aria-label="Cluster size"></div>
+      <div class="stage">
+        <div class="mods" id="mods"></div>
+        <div class="racks" id="racks" aria-label="Per-Spark memory tanks"></div>
+      </div>
+      <div class="verdict">
+        <div class="big ok" id="vBig">—</div>
+        <p id="vText">Loading catalog…</p>
+      </div>
+    </div>
+
+    <p class="lede">
+      121 GB is <b>per Spark</b>, not a shared pool. A 2-Spark cluster is two 121 GB tanks.
+      DS4F in TP2 puts about <b>79 GB of weights on each rank</b> — that is why the live pair
+      looks full, not half empty.
+    </p>
+
+    <section class="story" id="why">
+      <h2>What this is for</h2>
+      <p>
+        <strong>sparkfit</strong> answers “does this one model fit?”
+        <strong>Mia’s recipes</strong> start the model.
+        <strong>This</strong> answers the weekly question: can these residents share a box without a hard reboot.
+      </p>
+      <p>
+        <strong>H3 + DS4F</strong> is the measured kill combo (89.4 GB on Spark 1).
+        <strong>Vision 4B</strong> can sit on Spark 2 beside the cluster. A 9B vision TP2 under DS4F cannot.
+        Docker stats will lie about unified memory — believe <code>free</code> and these dated sizes.
+      </p>
+      <p>
+        The catalog will not start or stop anything. <code>./probe.sh</code> only reads
+        <code>free</code>, listening ports, and docker names, then writes <code>probe.json</code>.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>Per-Spark tanks · 121 GB each</span>
+      <a href="https://coinupbtc.com/">coinupbtc.com</a>
+    </div>
+  </footer>
+
+  <script src="js/pack.js"></script>
+  <script src="js/boot.js"></script>
+  <script src="js/probe.js"></script>
+</body>
+</html>

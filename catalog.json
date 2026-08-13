@@ -1,0 +1,99 @@
+{
+  "tank_gb": 121,
+  "tight_headroom_gb": 15,
+  "as_of": "2026-08-13",
+  "note": "Sizes are measured unified-memory footprints on DGX Spark, not docker stats (UMA under-reports). Dated so this does not become a museum.",
+  "os": {
+    "id": "os",
+    "name": "OS + desktop",
+    "gb": 16,
+    "perSpark": true,
+    "always": true,
+    "color": "#8b9287",
+    "why": "Kernel, desktop, agents. Live DS4F leftover after weights+KV was ~17 GB — 8 GB was a lie.",
+    "label": "16 GB each",
+    "as_of": "2026-08-13",
+    "source": "Live node1: 105.9 used − 79.2 weights − 9.9 KV ≈ 16.8 GB leftover."
+  },
+  "modules": [
+    {
+      "id": "ds4f",
+      "name": "DS4F-0731",
+      "gb": 79.2,
+      "kind": "cluster",
+      "color": "#c8f54a",
+      "why": "79.2 GB of weights per rank. TP2 fills Spark 1 and 2. One Spark cannot hold both ranks.",
+      "label": "79.2 GB / rank",
+      "as_of": "2026-08-10",
+      "source": "vLLM boot split on a live TP=2 serve."
+    },
+    {
+      "id": "kv",
+      "name": "KV cache",
+      "gb": 9.9,
+      "kind": "cluster",
+      "needs": "ds4f",
+      "color": "#a8e04a",
+      "why": "Per rank at util 0.75 / 524k ctx. Needs DS4F. 1M ctx at 0.85 is how boxes go tight.",
+      "label": "9.9 GB / rank",
+      "as_of": "2026-08-13",
+      "source": "Live Available KV ~9.9 GiB / 748k tok."
+    },
+    {
+      "id": "vision",
+      "name": "Vision 4B",
+      "gb": 5.4,
+      "kind": "sidecar",
+      "color": "#63b6ff",
+      "why": "TP1 sidecar. On two Sparks it sits on Spark 2 beside the cluster. Do not put 9B vision TP2 under DS4F.",
+      "label": "5.4 GB · TP1",
+      "as_of": "2026-08-11",
+      "source": "Measured RSS beside DS4F on the worker Spark."
+    },
+    {
+      "id": "helper",
+      "name": "Helper 35B",
+      "gb": 39.5,
+      "kind": "spare",
+      "color": "#d9ff63",
+      "why": "llama.cpp BALANCED profile. On 3 Sparks it takes the spare. On 2 it displaces the cluster.",
+      "label": "39.5 GB · TP1",
+      "as_of": "2026-07-09",
+      "source": "miaai35-tune BALANCED VRAM, thinking off."
+    },
+    {
+      "id": "h3",
+      "name": "H3 video",
+      "gb": [89.4, 41.4],
+      "kind": "h3",
+      "minSparks": 2,
+      "color": "#ff6b5e",
+      "why": "Asymmetric: 89.4 GB on Spark 1, 41.4 on Spark 2. Cannot share a tank with DS4F. That pairing hard-rebooted a box.",
+      "label": "89.4 + 41.4 · TP2",
+      "as_of": "2026-08-04",
+      "source": "Measured during the H3 + resident OOM incident."
+    },
+    {
+      "id": "qwen27",
+      "name": "Qwen 27B",
+      "gb": 36,
+      "kind": "spare",
+      "color": "#7ec8e3",
+      "why": "TP1 deep lane. 36 GB KV pool measured. TP2 deadlocked — not a shipped layout.",
+      "label": "36 GB · TP1",
+      "as_of": "2026-07-30",
+      "source": "Helper-mode deep lane, not co-resident with DS4F."
+    },
+    {
+      "id": "gemma",
+      "name": "Gemma 31B",
+      "gb": 19,
+      "kind": "spare",
+      "color": "#e8c36a",
+      "why": "Ollama line, TP1. Fits a spare Spark. Unload it before a cluster start.",
+      "label": "19 GB · TP1",
+      "as_of": "2026-07",
+      "source": "Ollama resident size on a single Spark."
+    }
+  ]
+}
